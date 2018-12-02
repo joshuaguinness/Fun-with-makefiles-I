@@ -1,0 +1,35 @@
+all: yous1.o yous2.o yous3.o yous4.o script2.txt script3.txt file1 file2 file3 file4 yous.cpp
+	g++ -c yous1.cpp yous2.cpp yous3.cpp yous4.cpp
+script2.txt: .FORCE
+	tr "1" "2" < script1.txt > script2.txt	
+	chmod u+x script2.txt
+.FORCE:
+script3.txt: .FORCE
+	tr "1" "4" < script1.txt > script3.txt
+	chmod u+x script3.txt
+.FORCE:
+yous.cpp: .FORCE
+	cat fileA.txt > yous.cpp
+	cat fileB.txt >> yous.cpp
+	cat fileC.txt >> yous.cpp
+.FORCE:	
+yous2.cpp: yous1.cpp
+	tr "1" "2" < yous1.cpp > yous2.cpp
+yous3.cpp: yous1.cpp
+	tr "1" "3" < yous1.cpp > yous3.cpp
+yous4.cpp: yous1.cpp
+	tr "1" "4" < yous1.cpp > tempfile
+	sed 's/FUNCTIONAL/NOT FUNCTIONAL/g' tempfile > yous4.cpp
+file1: yous.cpp
+	./script1.txt
+	chmod u+x file1
+file2: yous.cpp
+	./script2.txt
+	chmod u+x file2
+file3: yous.cpp yous1.o yous2.o yous3.o yous4.o
+	g++ -o file3 yous.cpp -D_X3 yous1.o yous2.o yous3.o yous4.o
+file4: yous.cpp
+	./script3.txt
+	chmod u+x file4
+clean:
+	rm yous2.cpp yous3.cpp yous4.cpp yous1.o yous2.o yous.cpp yous3.o yous4.o file1 file2 file3 file4 tempfile script2.txt script3.txt
